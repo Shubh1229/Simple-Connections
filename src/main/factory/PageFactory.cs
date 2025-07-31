@@ -9,20 +9,34 @@ using SimpleConnections.tools.pages;
 
 namespace SimpleConnections.factory
 {
+    /// <summary>
+    /// Responsible for constructing and returning different types of pages (MainMenu, Connections, etc.).
+    /// Uses dependency injection when available, or falls back to new instances.
+    /// </summary>
     public class PageFactory : IFactory<PageModel>
     {
-        private readonly PAGETYPE type;
-        private IChatRoom? chatRoom;
-        private IConnectionService? connection;
-        private IMessageProtocol? protocol;
-        private IPeerDiscoveryService? peerDiscovery;
-        private readonly Logger<PageFactory> logger_;
-        private readonly CancellationToken token = new();
+        private readonly PAGETYPE type; // The page type to construct (MainMenu, Profile, etc.)
+        private IChatRoom? chatRoom;    // Chat room dependency
+        private IConnectionService? connection; // Network connection dependency
+        private IMessageProtocol? protocol;     // Message encoder/decoder
+        private IPeerDiscoveryService? peerDiscovery; // Peer discovery logic
+        private readonly Logger<PageFactory> logger_; // Internal logger
+        private readonly CancellationToken token = new(); // Cancellation token for async logging
+
+
+        /// <summary>
+        /// Builds a default Main Menu page using the base constructor.
+        /// </summary>
         public PageModel Build()
         {
             logger_.Log($"Building Main Menu off of Base Build() Method").WaitAsync(token);
             return MainMenuBuilder();
         }
+
+
+        /// <summary>
+        /// Builds a page of the specified type using injected dependencies.
+        /// </summary>
         public PageModel Build(IChatRoom chatRoom, IConnectionService connection, IMessageProtocol protocol, IPeerDiscoveryService peerDiscovery)
         {
             {
@@ -54,9 +68,16 @@ namespace SimpleConnections.factory
                 default:
                     throw new NotImplementedException($"Feature for factory build type: {nameof(type)} is not implemented yet");
             }
-            
+
         }
 
+
+        /// <summary>
+        /// Returns a <c>string</c> for the name of the <c>PAGETYPE</c>
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception">Page Type could not be identified.</exception>
         private string NameOfType(PAGETYPE type)
         {
             switch (type)
@@ -70,10 +91,15 @@ namespace SimpleConnections.factory
                 case PAGETYPE.CHATROOM:
                     return "CHATROOM";
                 default:
-                    throw new Exception("Type could not be identified.");
+                    throw new Exception("Page Type could not be identified.");
             }
         }
 
+        /// <summary>
+        /// Builds the Chat Room Page and returns it.
+        /// <code>Application.Run(new PageFactory(PAGETYPE.CHATROOM));</code>
+        /// </summary>
+        /// <returns><c>ChatroomPage</c></returns>
         private PageModel ChatRoomBuilder()
         {
             throw new NotImplementedException();
@@ -93,6 +119,11 @@ namespace SimpleConnections.factory
             }
         }
 
+        /// <summary>
+        /// Builds the Profile Menu Page and returns it.
+        /// <code>Application.Run(new PageFactory(PAGETYPE.PROFILE));</code>
+        /// </summary>
+        /// <returns><c>ProfilePage</c></returns>
         private PageModel ProfileBuilder()
         {
             throw new NotImplementedException();
@@ -112,11 +143,15 @@ namespace SimpleConnections.factory
             }
         }
 
+        /// <summary>
+        /// Builds the Connections Page and returns it.
+        /// <code>Application.Run(new PageFactory(PAGETYPE.CONNECTIONS));</code>
+        /// </summary>
+        /// <returns><c>ConnectionsPage</c></returns>
         private PageModel ConnectionsBuilder()
         {
-            //throw new NotImplementedException();
             logger_.Log($"Building Connections Page...").WaitAsync(token);
-            Logger<MainMenu> logger = new();
+            Logger<ConnectionsPage> logger = new();
             MainMenuBackground background = new();
             if (CheckFieldsNull())
             {
@@ -124,14 +159,19 @@ namespace SimpleConnections.factory
                 ConnectionService_v1 connection = new();
                 LANDiscovery lan = new();
                 MessageProtocol_v1 protocol = new();
-                return new MainMenu(background, connection, chatRoom, logger, protocol, lan);
+                return new ConnectionsPage(background, connection, chatRoom, logger, protocol, lan);
             }
             else
             {
-                return new MainMenu(background, connection, chatRoom, logger, protocol, peerDiscovery);
+                return new ConnectionsPage(background, connection, chatRoom, logger, protocol, peerDiscovery);
             }
         }
 
+        /// <summary>
+        /// Builds the Main Menu Page and returns it.
+        /// <code>Application.Run(new PageFactory(PAGETYPE.MAINMENU));</code>
+        /// </summary>
+        /// <returns><c>MainMenu</c></returns>
         private PageModel MainMenuBuilder()
         {
             logger_.Log($"Building Main Menu...").WaitAsync(token);
@@ -152,7 +192,11 @@ namespace SimpleConnections.factory
                 return new MainMenu(background, connection, chatRoom, logger, protocol, peerDiscovery);
             }
         }
-        private bool CheckFieldsNull() {
+        /// <summary>
+        /// Checks if any injected dependencies are missing (null).
+        /// </summary>
+        private bool CheckFieldsNull()
+        {
             return chatRoom == null || connection == null || protocol == null || peerDiscovery == null;
         }
         public PageFactory(PAGETYPE type)

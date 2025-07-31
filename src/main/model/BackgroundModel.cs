@@ -1,16 +1,23 @@
 
-using SimpleConnections.blueprints;
-using SimpleConnections.factory;
-using SimpleConnections.resources;
-using Terminal.Gui;
 
 namespace SimpleConnections.model
 {
+    using SimpleConnections.blueprints;
+    using SimpleConnections.factory;
+    using SimpleConnections.resources;
+    using Terminal.Gui;
+    /// <summary>
+    /// Abstract base class for page backgrounds. Implements IBackground and provides helper logic
+    /// for button interactions and ASCII art rendering.
+    /// </summary>
     public abstract class BackgroundModel : IBackground
     {
+        /// <summary>Logger for button activity and debug output.</summary>
         private static readonly Logger<BackgroundModel> logger = new();
         private static readonly CancellationToken token = new();
+        /// <summary>Implement this to visually construct the background of a page.</summary>
         public abstract Task BuildBackground(View container, PageModel page);
+        /// <summary>Handles non-navigation button presses (e.g., USB, Exit, etc.).</summary>
         public void ButtonPressed(ButtonType button)
         {
             logger.Log($"Button {ButtonPressedName(button)} Is Being Executed...").WaitAsync(token);
@@ -50,6 +57,7 @@ namespace SimpleConnections.model
                     throw new Exception($"{nameof(button)} is not a valid button");
             }
         }
+        /// <summary>Returns a readable name string for a given button type.</summary>
         private string ButtonPressedName(ButtonType button)
         {
             switch (button)
@@ -76,6 +84,7 @@ namespace SimpleConnections.model
                     throw new Exception($"Could not find button {button}");
             }
         }
+        /// <summary>Handles navigation buttons by swapping to the appropriate page.</summary>
         public void ButtonPressed(ButtonType button, PageModel page)
         {
             if (page == null) throw new NullReferenceException("Page is never initialized");
@@ -110,6 +119,7 @@ namespace SimpleConnections.model
                     throw new Exception($"{nameof(button)} is not a valid button");
             }
         }
+        /// <summary>Returns an ASCII art block for the given type.</summary>
         public string GetArt(ART art)
         {
             switch (art)
@@ -224,6 +234,7 @@ namespace SimpleConnections.model
                     throw new Exception("How did you even get here?");
             }
         }
+        /// <summary>Switches to the requested page using the factory system.</summary>
         private void SwitchPage(PAGETYPE type, PageModel page)
         {
             PageFactory pageFactory = new PageFactory(type);

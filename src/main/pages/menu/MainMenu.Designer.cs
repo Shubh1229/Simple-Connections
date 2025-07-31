@@ -6,6 +6,9 @@ namespace SimpleConnections.pages.menu
     using SimpleConnections.blueprints;
     using SimpleConnections.model;
     using Terminal.Gui;
+    /// <summary>
+    /// Initial entry screen for the app, displays device art, credits, and navigation buttons.
+    /// </summary>
     public class MainMenu : PageModel
     {
         private readonly IBackground background;
@@ -16,6 +19,7 @@ namespace SimpleConnections.pages.menu
         private readonly IPeerDiscoveryService peerDiscovery;
         private readonly CancellationToken token;
 
+        /// <summary>Constructs the Main Menu and injects required services.</summary>
         public MainMenu(IBackground background, IConnectionService connection,
         IChatRoom chatRoom, ILogger logger, IMessageProtocol messageProtocol, IPeerDiscoveryService peerDiscovery)
             : base("Simple Connections", background, connection, logger, messageProtocol, peerDiscovery, chatRoom)
@@ -29,6 +33,7 @@ namespace SimpleConnections.pages.menu
             this.token = new();
             InitializeComponent();
         }
+        /// <summary>Builds the menu UI, background art, and routing buttons.</summary>
         public override void InitializeComponent()
         {
             this.Width = Dim.Fill(0);
@@ -48,6 +53,6 @@ namespace SimpleConnections.pages.menu
             logger.Log("Initial Window Options Set -> Calling Background Builder").WaitAsync(token);
             background.BuildBackground(this, this).Wait(token);
         }
-        
+
     }
 }

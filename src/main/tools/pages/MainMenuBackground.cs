@@ -7,8 +7,16 @@ namespace SimpleConnections.tools.pages
     using SimpleConnections.model;
     using SimpleConnections.resources;
     using Terminal.Gui;
+    /// <summary>
+    /// Specific implementation of BackgroundModel used for the Main Menu screen.
+    /// Adds device-themed ASCII buttons, credits, and interactive navigation.
+    /// </summary>
     public class MainMenuBackground : BackgroundModel
     {
+        /// <summary>
+        /// Builds the layout and visuals for the main menu including title art, button frame, 
+        /// device buttons (PC, USB, Console, Apple), and navigation labels.
+        /// </summary>
         public override Task BuildBackground(View container, PageModel page)
         {
             var text = GetArt(art: ART.TITLE);
@@ -124,7 +132,7 @@ Website: https://ccflock.duckdns.org
                 Y = Pos.Center() - 20,
                 ColorScheme = new ColorScheme()
                 {
-                    Normal = new Attribute(Color.Red, Color.Black)
+                    Normal = new Attribute(Color.BrightRed, Color.Black)
                 }
             };
             var consoleArt = GetArt(ART.CONSOLE);
