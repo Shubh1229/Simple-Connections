@@ -1,13 +1,16 @@
-﻿using Simple_Connections;
+﻿using SimpleConnections;
+using SimpleConnections.factory;
 using Terminal.Gui;
 
 Application.Init();
 
 try
 {
-    Application.Run(new MyView());
+    PageFactory page = new PageFactory(PAGETYPE.MAINMENU);
+    Application.Run(page.Build());
 }
 finally
 {
     Application.Shutdown();
+    Environment.Exit(0);
 }

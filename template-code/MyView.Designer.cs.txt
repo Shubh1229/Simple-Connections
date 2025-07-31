@@ -32,7 +32,7 @@ namespace Simple_Connections {
             this.Border.Effect3D = false;
             this.Border.DrawMarginFrame = true;
             this.TextAlignment = Terminal.Gui.TextAlignment.Left;
-            this.Title = "Press Ctrl+Q to quit";
+            this.Title = "Simple Connections";
             this.label1.Width = 4;
             this.label1.Height = 1;
             this.label1.X = Pos.Center();
