@@ -24,7 +24,23 @@ namespace SimpleConnections.model
             this.peerDiscovery = peerDiscovery;
             this.chatRoom = chatRoom;
         }
-        public PageModel(){}
+        public PageModel() { }
         public abstract void InitializeComponent();
+        public IConnectionService GetConnectionService()
+        {
+            return connection ?? throw new NullReferenceException("Connection Service is not initialized");
+        }
+        public IChatRoom GetChatRoom()
+        {
+            return chatRoom ?? throw new NullReferenceException("Chat Room is not initialized");
+        }
+        public IMessageProtocol GetMessageProtocol()
+        {
+            return protocol ?? throw new NullReferenceException("Message Protocol is not initialized");
+        }
+        public IPeerDiscoveryService GetPeerDiscoveryService()
+        {
+            return peerDiscovery ?? throw new NullReferenceException("Peer Discovery Service is not initialized");
+        }
     }
 }
