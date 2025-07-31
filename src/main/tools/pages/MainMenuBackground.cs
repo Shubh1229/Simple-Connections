@@ -7,12 +7,10 @@ namespace SimpleConnections.tools.pages
     using SimpleConnections.model;
     using SimpleConnections.resources;
     using Terminal.Gui;
-    public class MainMenuBackground : IBackground
+    public class MainMenuBackground : BackgroundModel
     {
-        private PageModel page;
-        public Task BuildBackground(View container, PageModel page)
+        public override Task BuildBackground(View container, PageModel page)
         {
-            this.page = page;
             var text = GetArt(art: ART.TITLE);
             var label = new Label()
             {
@@ -39,8 +37,10 @@ namespace SimpleConnections.tools.pages
                 Height = Dim.Percent(70),
                 Border = new Border()
                 {
-                    BorderStyle = BorderStyle.Double,
-                    DrawMarginFrame = true
+                    BorderStyle = BorderStyle.Rounded,
+                    Title = "Choose One...",
+                    DrawMarginFrame = true,
+                    BorderBrush = Color.BrightCyan,
                 },
                 ColorScheme = new ColorScheme()
                 {
@@ -52,7 +52,7 @@ namespace SimpleConnections.tools.pages
             {
                 Width = 20,
                 X = Pos.Center(),
-                Y = Pos.AnchorEnd(10),
+                Y = Pos.AnchorEnd(8),
                 Data = "exit",
                 Text = exitbuttonText,
                 TextAlignment = TextAlignment.Centered,
@@ -60,15 +60,15 @@ namespace SimpleConnections.tools.pages
                 {
                     Normal = new Attribute(foreground: Color.BrightGreen, background: Color.Red)
                 },
-                Border = new Border()
-                {
-                    BorderBrush = Color.BrightMagenta,
-                    BorderStyle = BorderStyle.Single,
-                }
+                // Border = new Border()
+                // {
+                //     BorderBrush = Color.BrightMagenta,
+                //     BorderStyle = BorderStyle.Single,
+                // }
             };
             exitbutton.Clicked += () =>
             {
-                Application.RequestStop();
+                ButtonPressed(ButtonType.Exit);
             };
 
 
@@ -165,40 +165,94 @@ Website: https://ccflock.duckdns.org
             {
                 usb.Clicked += () =>
                 {
-                    ButtonPressed(Button.Usb);
+                    ButtonPressed(ButtonType.Usb);
                 };
                 pc.Clicked += () =>
                 {
-                    ButtonPressed(Button.Pc);
+                    ButtonPressed(ButtonType.Pc);
                 };
                 console.Clicked += () =>
                 {
-                    ButtonPressed(Button.Console);
+                    ButtonPressed(ButtonType.Console);
                 };
                 apple.Clicked += () =>
                 {
-                    ButtonPressed(Button.Apple);
+                    ButtonPressed(ButtonType.Apple);
                 };
             }
 
 
-            /*
-                TODO:
-                    All these buttons need to be added to the main menu view
-                    They also need to initialize new views as well.
-            */
+            var collectionArt = GetArt(ART.COLLECTIONS);
+            var connectionsbutton = new Label()
             {
-                var connectionsbutton = new Button() { };
-                var profilebutton = new Button() { };
-                var chatroombutton = new Button() { };
+                Width = 30,
+                Height = 5,
+                X = Pos.Center(),
+                Y = Pos.Top(buttonView) - 4,
+                Data = "Connections",
+                Text = collectionArt,
+                TextAlignment = TextAlignment.Centered,
+                ColorScheme = new ColorScheme
                 {
-                    /*
-                        Also note this below
-                        PageFactory pageFactory = new PageFactory(PAGETYPE.CONNECTIONS);
-                        pageFactory.Build(page.GetChatRoom(), page.GetConnectionService(), page.GetMessageProtocol(), page.GetPeerDiscoveryService());
-                    */
-                }
-            }
+                    Normal = new Attribute(Color.BrightGreen, Color.Blue)
+                },
+                // Border = new Border()
+                // {
+                //     BorderBrush = Color.BrightMagenta,
+                //     BorderStyle = BorderStyle.Single
+                // },
+            };
+            connectionsbutton.Clicked += () =>
+            {
+                ButtonPressed(ButtonType.Connections, page);
+            };
+            var profileArt = GetArt(ART.PROFILE);
+            var profilebutton = new Label()
+            {
+                Width = 20,
+                X = Pos.Center(),
+                Y = Pos.Center() + 3,
+                Data = "profile",
+                Text = profileArt,
+                TextAlignment = TextAlignment.Centered,
+                ColorScheme = new ColorScheme()
+                {
+                    Normal = new Attribute(foreground: Color.BrightGreen, background: Color.Magenta)
+                },
+                // Border = new Border()
+                // {
+                //     BorderBrush = Color.BrightMagenta,
+                //     BorderStyle = BorderStyle.Single,
+                // }
+            };
+            profilebutton.Clicked += () =>
+            {
+                ButtonPressed(ButtonType.Profile, page);
+            };
+            var chatroomArt = GetArt(ART.CHATROOM);
+            var chatroombutton = new Label()
+            {
+                Width = 25,
+                X = Pos.Center(),
+                Y = Pos.Center() - 6,
+                Data = "chatroom",
+                Text = chatroomArt,
+                TextAlignment = TextAlignment.Centered,
+                ColorScheme = new ColorScheme()
+                {
+                    Normal = new Attribute(foreground: Color.White, background: Color.Black)
+                },
+                // Border = new Border()
+                // {
+                //     BorderBrush = Color.BrightMagenta,
+                //     BorderStyle = BorderStyle.Single,
+                // }
+            };
+            chatroombutton.Clicked += () =>
+            {
+                ButtonPressed(ButtonType.ChatRoom, page);
+            };
+
             // Add all labels and buttons into the main menu view
             {
                 container.Add(label);
@@ -207,6 +261,9 @@ Website: https://ccflock.duckdns.org
                 buttonView.Add(usb);
                 buttonView.Add(console);
                 buttonView.Add(pc);
+                buttonView.Add(connectionsbutton);
+                buttonView.Add(profilebutton);
+                buttonView.Add(chatroombutton);
                 container.Add(buttonView);
                 container.Add(author);
                 container.Add(contact);
@@ -214,150 +271,5 @@ Website: https://ccflock.duckdns.org
 
             return Task.CompletedTask;
         }
-
-        private void ButtonPressed(Button button)
-        {
-            switch (button)
-            {
-                case Button.Pc:
-                    {
-                        WebsiteOpener.Run(Website.PC).WaitAsync(new CancellationToken());
-                        Application.RequestStop();
-                        break;
-                    }
-                case Button.Apple:
-                    {
-                        WebsiteOpener.Run(Website.PC).WaitAsync(new CancellationToken());
-                        Application.RequestStop();
-                        break;
-                    }
-                case Button.Console:
-                    {
-                        WebsiteOpener.Run(Website.PC).WaitAsync(new CancellationToken());
-                        Application.RequestStop();
-                        break;
-                    }
-                case Button.Usb:
-                    {
-                        WebsiteOpener.Run(Website.PC).WaitAsync(new CancellationToken());
-                        Application.RequestStop();
-                        break;
-                    }
-                case Button.Connections:
-                    {
-                        PageFactory pageFactory = new PageFactory(PAGETYPE.CONNECTIONS);
-                        pageFactory.Build(page.GetChatRoom(), page.GetConnectionService(), page.GetMessageProtocol(), page.GetPeerDiscoveryService());
-                        break;
-                    }
-                case Button.Exit:
-                    {
-                        Application.RequestStop();
-                        break;
-                    }
-                case Button.Profile:
-                    {
-                        PageFactory pageFactory = new PageFactory(PAGETYPE.PROFILE);
-                        pageFactory.Build(page.GetChatRoom(), page.GetConnectionService(), page.GetMessageProtocol(), page.GetPeerDiscoveryService());
-                        break;
-                    }
-                case Button.ChatRoom:
-                    {
-                        PageFactory pageFactory = new PageFactory(PAGETYPE.CHATROOM);
-                        pageFactory.Build(page.GetChatRoom(), page.GetConnectionService(), page.GetMessageProtocol(), page.GetPeerDiscoveryService());
-                        break;
-                    }
-                default:
-                    throw new Exception($"{nameof(button)} is not a valid button");
-            }
-        }
-        public string GetArt(ART art)
-        {
-            switch (art)
-            {
-                case ART.EXIT:
-                    {
-                        return
-@"
-░        ░░  ░░░░  ░░        ░░        ░
-▒  ▒▒▒▒▒▒▒▒▒  ▒▒  ▒▒▒▒▒▒  ▒▒▒▒▒▒▒▒  ▒▒▒▒
-▓      ▓▓▓▓▓▓    ▓▓▓▓▓▓▓  ▓▓▓▓▓▓▓▓  ▓▓▓▓
-█  █████████  ██  ██████  ████████  ████
-█        ██  ████  ██        █████  ████
-";
-                    }
-                case ART.TITLE:
-                    {
-                        return
-@"
-███████╗██╗███╗   ███╗██████╗ ██╗     ███████╗
-██╔════╝██║████╗ ████║██╔══██╗██║     ██╔════╝
-███████╗██║██╔████╔██║██████╔╝██║     █████╗
-╚════██║██║██║╚██╔╝██║██╔═══╝ ██║     ██╔══╝
-███████║██║██║ ╚═╝ ██║██║     ███████╗███████╗
-╚══════╝╚═╝╚═╝     ╚═╝╚═╝     ╚══════╝╚══════╝
-";
-                    }
-                case ART.APPLE:
-                    {
-                        return
-@"
-           .:'
-      __ :'__
-   .'`__`-'__``.
-  :__________.-'
-  :_________:
-   :_________`-;
-    `.__.-.__.'
-";
-                    }
-                case ART.CONSOLE:
-                    {
-                        return
-@"
-     []  ,----.___
-   __||_/___      '.
-  / O||    /|       )
- /   ""   / /   =._/
-/________/ /
-|________|/
-";
-                    }
-                case ART.PC:
-                    {
-                        return
-@"
-              .----.
-  .---------. | == |
-  |.-""""""""""-.| |----|
-  ||       || | == |
-  ||       || |----|
-  |'-.....-'| |::::|
-  `"""")---(""""` |___.|
- /:::::::::::\"" _  ""
-/:::=======:::\`\`\
-`""""""""""""""`  '-'
-";
-                    }
-                case ART.USB:
-                    {
-                        return
-@"
-   _   ,--()
-  ( )-'-.------|>
-   ""     `--[]
-";
-                    }
-                default:
-                    throw new Exception("How did you even get here?");
-            }
-        }
-    }
-    public enum ART
-    {
-        EXIT, APPLE, CONSOLE, PC, USB, TITLE
-    }
-    public enum Button
-    {
-        Exit, Connections, Profile, ChatRoom, Apple, Console, Pc, Usb
     }
 }

@@ -1,7 +1,9 @@
 ﻿using SimpleConnections;
 using SimpleConnections.factory;
+using SimpleConnections.model;
 using Terminal.Gui;
 
+Console.Clear();
 Application.Init();
 
 try
